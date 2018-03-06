@@ -3,6 +3,7 @@
 namespace ZipkinTests\Unit\Propagation;
 
 use InvalidArgumentException;
+use LogicException;
 use PHPUnit_Framework_TestCase;
 use Zipkin\Propagation\DefaultSamplingFlags;
 use Zipkin\Propagation\TraceContext;
@@ -22,7 +23,7 @@ final class TraceContextTest extends PHPUnit_Framework_TestCase
 
     const IS_FINAL_MUTATION = true;
 
-    private $hasAtLeastOneMutation;
+    private $hasAtLeastOneMutation = false;
 
     protected function setUp()
     {
@@ -188,7 +189,7 @@ final class TraceContextTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider boolProvider
      */
-    public function testIsEqualSuccessOnDifferentContexts($sampled, $debug)
+    public function testIsEqualFailsOnDifferentContexts($sampled, $debug)
     {
         $traceContext1 = TraceContext::create(
             $this->maybeMutate(self::TEST_TRACE_ID),
@@ -234,13 +235,16 @@ final class TraceContextTest extends PHPUnit_Framework_TestCase
         $this->hasAtLeastOneMutation = true;
 
         if ($value === (string) $value) {
-            $value = substr($value, 0, -1) . mt_rand(0, 9);
+            return substr($value, 0, -1) . mt_rand(0, 9);
         }
 
         if ($value === (bool) $value) {
-            $value = !$value;
+            return !$value;
         }
 
-        return $value;
+        throw new LogicException(sprintf(
+            'Invalid value type: %s, expected string or boolean',
+            gettype($value)
+        ));
     }
 }

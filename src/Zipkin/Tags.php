@@ -36,12 +36,13 @@ const HTTP_PATH = 'http.path';
  * The route which a request matched or "" (empty string) if routing is supported, but there was
  * no match. Ex "/objects/{objectId}"
  *
- * <p>Often used as a span name when known, with empty routes coercing to "not_found" or
- * "redirected" based on {@link #HTTP_STATUS_CODE}.</p>
- *
  * <p>Unlike {@link #HTTP_PATH}, this value is fixed cardinality, so is a safe input to a span
  * name function or a metrics dimension. Different formats are possible. For example, the
- * following are all valid route templates: "/objects" "/objects/:objectId" "/objects/*"</p>
+ * are all valid route templates: "/users" "/users/:userId" "/users/*"
+ *
+ * <p>Route-based span name generation often uses other tags, such as HTTP_METHOD("http.method") and
+ * HTTP_STATUS_CODE("http.status_code"). Route-based names can look like "get /users/{userId}",
+ * "post /users", "get not_found" or "get redirected".
  */
 const HTTP_ROUTE = 'http.route';
 
